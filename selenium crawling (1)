@@ -1,0 +1,30 @@
+#Python selenium을 이용한 카카오맵 상호명 크롤링
+
+from selenium import webdriver # 셀레니움 - 웹 드라이버 기능 사용
+from selenium.webdriver.common.keys import Keys # 셀레니움 - 키 (객체) 전달
+
+driver = webdriver.Chrome("C:/chromedriver.exe") # 크롬 드라이버 위치 기재
+
+driver.get("https://map.kakao.com/")
+driver.implicitly_wait(5) # 지연 시간
+
+element = "검색을 원하는 명칭 (상호)"
+search_box = driver.find_element_by_id("search.keyword.query")
+search_box.send_keys(element)
+search_box.send_keys(Keys.ENTER)
+
+data_list = []
+
+#for문 범위는 필요에 따라 지정
+for i in range(1, 12):
+    # 4번째 위치에 광고가 삽입 되어있어 if문 통해서 제외 처리
+    if i != 4:
+        store = driver.find_element_by_xpath(
+            '// *[ @id="info.search.place.list"] / li[%s] / div[3] / strong / a[2]' % i)
+        data_list.append(store.text)
+
+data_list = list(set(data_list)) # 같은 상호 삭제를 원할 시
+
+print(data_list)
+
+driver.close()
